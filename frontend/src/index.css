@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-body text-ink-900 bg-parchment-50 antialiased;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(237, 101, 32, 0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(90, 127, 90, 0.03) 0%, transparent 50%);
+  }
+  
+  ::selection {
+    @apply bg-ember-200 text-ink-900;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-parchment-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-ink-300 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-ink-400;
+  }
+}
+
+/* Component styles */
+@layer components {
+  .glass-panel {
+    @apply bg-white/70 backdrop-blur-sm border border-parchment-200 shadow-paper;
+  }
+  
+  .btn-primary {
+    @apply px-4 py-2 bg-ember-500 text-white font-medium rounded-lg
+           hover:bg-ember-600 active:bg-ember-700 
+           transition-all duration-200 ease-out
+           shadow-sm hover:shadow-md
+           focus:outline-none focus:ring-2 focus:ring-ember-400 focus:ring-offset-2;
+  }
+  
+  .btn-secondary {
+    @apply px-4 py-2 bg-parchment-100 text-ink-700 font-medium rounded-lg
+           border border-parchment-300
+           hover:bg-parchment-200 hover:border-parchment-400
+           active:bg-parchment-300
+           transition-all duration-200 ease-out
+           focus:outline-none focus:ring-2 focus:ring-sage-400 focus:ring-offset-2;
+  }
+  
+  .btn-ghost {
+    @apply px-3 py-2 text-ink-600 font-medium rounded-lg
+           hover:bg-parchment-100 hover:text-ink-800
+           active:bg-parchment-200
+           transition-all duration-200 ease-out
+           focus:outline-none focus:ring-2 focus:ring-ink-300;
+  }
+  
+  .input-field {
+    @apply w-full px-4 py-3 
+           bg-white border border-parchment-300 rounded-lg
+           text-ink-800 placeholder-ink-400
+           focus:outline-none focus:ring-2 focus:ring-ember-300 focus:border-ember-400
+           transition-all duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl border border-parchment-200 shadow-paper
+           hover:shadow-elevated transition-shadow duration-300;
+  }
+  
+  .tag {
+    @apply inline-flex items-center px-2.5 py-1 
+           text-xs font-medium rounded-full
+           bg-parchment-100 text-ink-600 border border-parchment-200;
+  }
+  
+  .tag-sage {
+    @apply bg-sage-100 text-sage-700 border-sage-200;
+  }
+  
+  .tag-ember {
+    @apply bg-ember-100 text-ember-700 border-ember-200;
+  }
+}
+
+/* Prose styles for AI responses */
+@layer utilities {
+  .prose-knowledge {
+    @apply text-ink-800 leading-relaxed;
+  }
+  
+  .prose-knowledge h1,
+  .prose-knowledge h2,
+  .prose-knowledge h3 {
+    @apply font-display font-semibold text-ink-900 mt-6 mb-3;
+  }
+  
+  .prose-knowledge h1 { @apply text-2xl; }
+  .prose-knowledge h2 { @apply text-xl; }
+  .prose-knowledge h3 { @apply text-lg; }
+  
+  .prose-knowledge p {
+    @apply mb-4;
+  }
+  
+  .prose-knowledge ul,
+  .prose-knowledge ol {
+    @apply mb-4 pl-6;
+  }
+  
+  .prose-knowledge li {
+    @apply mb-2;
+  }
+  
+  .prose-knowledge ul li {
+    @apply list-disc;
+  }
+  
+  .prose-knowledge ol li {
+    @apply list-decimal;
+  }
+  
+  .prose-knowledge code {
+    @apply font-mono text-sm bg-parchment-100 px-1.5 py-0.5 rounded text-ember-700;
+  }
+  
+  .prose-knowledge pre {
+    @apply bg-ink-900 text-parchment-100 p-4 rounded-lg overflow-x-auto mb-4;
+  }
+  
+  .prose-knowledge pre code {
+    @apply bg-transparent p-0 text-parchment-100;
+  }
+  
+  .prose-knowledge blockquote {
+    @apply border-l-4 border-sage-400 pl-4 italic text-ink-600 my-4;
+  }
+  
+  .prose-knowledge a {
+    @apply text-ember-600 underline hover:text-ember-700;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Loading states */
+.skeleton {
+  @apply bg-gradient-to-r from-parchment-100 via-parchment-200 to-parchment-100;
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Chat message animations */
+.message-enter {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.message-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+}

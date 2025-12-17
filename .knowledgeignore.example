@@ -1,0 +1,96 @@
+# Knowledge AI Ignore File
+# Place this file in any directory to customize what gets indexed
+# Syntax is similar to .gitignore
+
+# ============================================
+# Directories to ignore
+# ============================================
+
+# Dependencies
+node_modules/
+vendor/
+bower_components/
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.egg-info/
+
+# Build outputs
+dist/
+build/
+out/
+target/
+
+# IDE files
+.idea/
+.vscode/
+*.xcworkspace/
+
+# ============================================
+# Files to ignore
+# ============================================
+
+# Lock files (auto-generated, not useful knowledge)
+package-lock.json
+yarn.lock
+poetry.lock
+Cargo.lock
+
+# Compiled/minified files
+*.min.js
+*.min.css
+*.bundle.js
+*.map
+
+# Binary files
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Images (usually not useful for text knowledge)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+
+# ============================================
+# Sensitive files (ALWAYS ignored by default)
+# ============================================
+# These are ignored automatically but you can add more:
+
+# Environment files
+.env
+.env.*
+*.env
+
+# Credentials
+credentials.json
+secrets.yaml
+*_secret*
+*_key*
+
+# SSH keys
+id_rsa
+id_rsa.pub
+*.pem
+*.key
+
+# ============================================
+# Custom patterns
+# ============================================
+# Add your own patterns below:
+
+# Example: ignore all test files
+# *_test.py
+# *.test.js
+# *.spec.ts
+
+# Example: ignore specific folders
+# drafts/
+# archive/
+# old/
