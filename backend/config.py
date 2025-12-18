@@ -19,16 +19,20 @@ class Config:
         self.config_dir = Path.home() / ".knowledge-ai"
         self.config_file = self.config_dir / "config.json"
         self.key_file = self.config_dir / ".key"
-        
+
         # Configuration values
         self.openai_api_key: Optional[str] = None
         self.anthropic_api_key: Optional[str] = None
-        self.embedding_provider: str = "openai"  # openai, ollama
-        self.chat_provider: str = "anthropic"  # openai, anthropic, ollama
+        self.openrouter_api_key: Optional[str] = None
+        self.embedding_provider: str = "openrouter"  # openai, ollama, openrouter
+        self.chat_provider: str = "openrouter"  # openai, anthropic, ollama, openrouter
         self.ollama_base_url: str = "http://localhost:11434"
         self.ollama_model: str = "llama3.2"
         self.ollama_embedding_model: str = "nomic-embed-text"
-        
+        self.openrouter_base_url: str = "https://openrouter.ai/api/v1"
+        self.openrouter_chat_model: str = "anthropic/claude-sonnet-4"
+        self.openrouter_embedding_model: str = "openai/text-embedding-3-small"
+
         # Ensure config directory exists
         self.config_dir.mkdir(parents=True, exist_ok=True)
     
@@ -63,23 +67,28 @@ class Config:
         """Load configuration from disk."""
         if not self.config_file.exists():
             return
-        
+
         try:
             data = json.loads(self.config_file.read_text())
-            
+
             # Decrypt API keys
             if "openai_api_key" in data:
                 self.openai_api_key = self._decrypt(data["openai_api_key"])
             if "anthropic_api_key" in data:
                 self.anthropic_api_key = self._decrypt(data["anthropic_api_key"])
-            
+            if "openrouter_api_key" in data:
+                self.openrouter_api_key = self._decrypt(data["openrouter_api_key"])
+
             # Load other settings
-            self.embedding_provider = data.get("embedding_provider", "openai")
-            self.chat_provider = data.get("chat_provider", "anthropic")
+            self.embedding_provider = data.get("embedding_provider", "openrouter")
+            self.chat_provider = data.get("chat_provider", "openrouter")
             self.ollama_base_url = data.get("ollama_base_url", "http://localhost:11434")
             self.ollama_model = data.get("ollama_model", "llama3.2")
             self.ollama_embedding_model = data.get("ollama_embedding_model", "nomic-embed-text")
-            
+            self.openrouter_base_url = data.get("openrouter_base_url", "https://openrouter.ai/api/v1")
+            self.openrouter_chat_model = data.get("openrouter_chat_model", "anthropic/claude-sonnet-4")
+            self.openrouter_embedding_model = data.get("openrouter_embedding_model", "openai/text-embedding-3-small")
+
         except Exception as e:
             print(f"Error loading config: {e}")
     
@@ -88,13 +97,17 @@ class Config:
         data = {
             "openai_api_key": self._encrypt(self.openai_api_key) if self.openai_api_key else "",
             "anthropic_api_key": self._encrypt(self.anthropic_api_key) if self.anthropic_api_key else "",
+            "openrouter_api_key": self._encrypt(self.openrouter_api_key) if self.openrouter_api_key else "",
             "embedding_provider": self.embedding_provider,
             "chat_provider": self.chat_provider,
             "ollama_base_url": self.ollama_base_url,
             "ollama_model": self.ollama_model,
             "ollama_embedding_model": self.ollama_embedding_model,
+            "openrouter_base_url": self.openrouter_base_url,
+            "openrouter_chat_model": self.openrouter_chat_model,
+            "openrouter_embedding_model": self.openrouter_embedding_model,
         }
-        
+
         self.config_file.write_text(json.dumps(data, indent=2))
         self.config_file.chmod(0o600)  # Secure permissions
     
@@ -104,18 +117,22 @@ class Config:
         has_embeddings = False
         if self.embedding_provider == "openai" and self.openai_api_key:
             has_embeddings = True
+        elif self.embedding_provider == "openrouter" and self.openrouter_api_key:
+            has_embeddings = True
         elif self.embedding_provider == "ollama":
             has_embeddings = True  # Ollama doesn't need API key
-        
+
         # Check chat provider
         has_chat = False
         if self.chat_provider == "openai" and self.openai_api_key:
             has_chat = True
         elif self.chat_provider == "anthropic" and self.anthropic_api_key:
             has_chat = True
+        elif self.chat_provider == "openrouter" and self.openrouter_api_key:
+            has_chat = True
         elif self.chat_provider == "ollama":
             has_chat = True
-        
+
         return has_embeddings and has_chat
     
     def get_embedding_config(self) -> dict:
@@ -125,6 +142,13 @@ class Config:
                 "provider": "openai",
                 "api_key": self.openai_api_key,
                 "model": "text-embedding-3-small"
+            }
+        elif self.embedding_provider == "openrouter":
+            return {
+                "provider": "openrouter",
+                "api_key": self.openrouter_api_key,
+                "model": self.openrouter_embedding_model,
+                "base_url": self.openrouter_base_url
             }
         elif self.embedding_provider == "ollama":
             return {
@@ -147,6 +171,13 @@ class Config:
                 "provider": "anthropic",
                 "api_key": self.anthropic_api_key,
                 "model": "claude-sonnet-4-20250514"
+            }
+        elif self.chat_provider == "openrouter":
+            return {
+                "provider": "openrouter",
+                "api_key": self.openrouter_api_key,
+                "model": self.openrouter_chat_model,
+                "base_url": self.openrouter_base_url
             }
         elif self.chat_provider == "ollama":
             return {

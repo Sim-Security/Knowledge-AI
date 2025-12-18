@@ -106,6 +106,8 @@ User's question/request: {message}"""
             return await self._chat_anthropic(system_prompt, full_message, history)
         elif self.provider == "openai":
             return await self._chat_openai(system_prompt, full_message, history)
+        elif self.provider == "openrouter":
+            return await self._chat_openrouter(system_prompt, full_message, history)
         elif self.provider == "ollama":
             return await self._chat_ollama(system_prompt, full_message, history)
         else:
@@ -196,7 +198,52 @@ User's question/request: {message}"""
             
             data = response.json()
             return data["choices"][0]["message"]["content"]
-    
+
+    async def _chat_openrouter(
+        self,
+        system: str,
+        message: str,
+        history: List[Dict]
+    ) -> str:
+        """Chat using OpenRouter (supports 200+ models across providers)."""
+        api_key = self.chat_config.get("api_key")
+        model = self.chat_config.get("model", "anthropic/claude-sonnet-4")
+        base_url = self.chat_config.get("base_url", "https://openrouter.ai/api/v1")
+
+        if not api_key:
+            raise ValueError("OpenRouter API key not configured")
+
+        # Build messages array (OpenAI-compatible format)
+        messages = [{"role": "system", "content": system}]
+        for msg in history[-10:]:
+            messages.append({
+                "role": msg["role"],
+                "content": msg["content"]
+            })
+        messages.append({"role": "user", "content": message})
+
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "HTTP-Referer": "https://github.com/knowledge-ai/knowledge-ai",
+                    "X-Title": "Knowledge AI",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": model,
+                    "messages": messages,
+                    "max_tokens": 4096
+                }
+            )
+
+            if response.status_code != 200:
+                raise Exception(f"OpenRouter API error: {response.text}")
+
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
+
     async def _chat_ollama(
         self,
         system: str,

@@ -781,6 +781,15 @@ class AIChat:
 
 ### 8.2 Supported Providers
 
+**Provider Comparison:**
+
+| Provider | Models | Cost | Privacy | Ease of Use | Recommended For |
+|----------|--------|------|---------|-------------|-----------------|
+| **OpenRouter** | 200+ | Variable | Medium | ★★★★★ | Most users |
+| OpenAI | 5-10 | Medium-High | Low | ★★★★☆ | Direct access |
+| Anthropic | 3-5 | Medium-High | Low | ★★★★☆ | Direct access |
+| Ollama | Unlimited | Free | High | ★★★☆☆ | Privacy-focused |
+
 #### 8.2.1 OpenAI
 
 **Embeddings**: `text-embedding-3-small`, `text-embedding-3-large`
@@ -796,13 +805,109 @@ class AIChat:
 **Advantages**: Excellent reasoning, large context window (200K tokens)
 **Disadvantages**: Requires API key, costs per token
 
-#### 8.2.3 Ollama (Local)
+#### 8.2.3 OpenRouter (Unified Provider) 🌟
 
-**Embeddings**: `nomic-embed-text`, `mxbai-embed-large`
-**Chat**: `llama3.2`, `mistral`, `mixtral`, `codellama`
+**Models**: 200+ across providers
+**Supported**: OpenAI (GPT-4o, GPT-4 Turbo), Anthropic (Claude Sonnet 4, Opus 4), Google (Gemini 2.0, Gemini Pro), Meta (Llama 3.3), Mistral, Cohere, and more
 
-**Advantages**: Completely local, free, full privacy
-**Disadvantages**: Requires local GPU for good performance, lower quality than cloud models
+**Advantages**:
+- Single API key for all providers
+- Automatic access to new models as they're released
+- Competitive pricing with transparent costs
+- No vendor lock-in - switch models instantly
+- User choice and experimentation
+- OpenAI-compatible API for easy integration
+
+**Disadvantages**: Requires internet connection, data sent to third-party service
+
+**Implementation**: OpenRouter provides an OpenAI-compatible API, making integration seamless. The same code that works with OpenAI can work with any OpenRouter model by simply changing the model identifier:
+
+```python
+# OpenRouter uses OpenAI-compatible format
+response = await client.post(
+    "https://openrouter.ai/api/v1/chat/completions",
+    headers={"Authorization": f"Bearer {api_key}"},
+    json={
+        "model": "anthropic/claude-sonnet-4",  # Or any other model
+        "messages": messages
+    }
+)
+```
+
+**Model Selection**: Users can dynamically select from available models through the UI, with the system fetching the current model list from OpenRouter's API. This ensures users always have access to the latest models without requiring code updates.
+
+#### 8.2.4 Ollama (Local)
+
+**Embeddings**: `nomic-embed-text`, `mxbai-embed-large`, `all-minilm`
+**Chat**: `llama3.2`, `llama3.2:1b`, `llama3.2:3b`, `phi3:mini`, `gemma2:9b`, `mistral`
+
+**Advantages**: Completely local, free, full privacy, no internet required
+**Disadvantages**: Requires sufficient hardware for good performance
+
+**Download Source**: All models download from [ollama.ai/library](https://ollama.ai/library)
+**Storage Location**: `~/.ollama/models/`
+
+### 8.2.5 Local Mode Guidelines
+
+Knowledge AI includes intelligent hardware detection to recommend the optimal provider strategy:
+
+#### Hardware Tiers & Recommendations
+
+| Hardware Tier | Requirements | Recommended Strategy |
+|--------------|--------------|---------------------|
+| **High-End** | 16GB+ VRAM, 32GB+ RAM | 🖥️ Full Local - Excellent performance |
+| **Mid-High** | 8GB+ GPU or Apple Silicon, 16GB+ RAM | 🖥️ Full Local - Good performance |
+| **Mid-Range** | 4GB GPU, 8GB RAM | 🔀 Hybrid - Local embeddings, cloud chat |
+| **Low-Mid** | No GPU, 6GB+ RAM | 🔀 Hybrid - Cloud chat recommended |
+| **Basic** | <6GB RAM | ☁️ Cloud - OpenRouter recommended |
+
+#### Speed Expectations
+
+| Tier | Expected Speed | Notes |
+|------|---------------|-------|
+| High-End | 10-50 tokens/sec | Can run 70B models |
+| Mid-High | 5-20 tokens/sec | 7-9B models optimal |
+| Mid-Range | 2-10 tokens/sec | 3B models or cloud |
+| Low-Mid | 1-5 tokens/sec | 1B models only |
+| Basic | <1 token/sec | Not recommended |
+
+#### Model Sizes
+
+| Model | Size | Min RAM | Use Case |
+|-------|------|---------|----------|
+| `llama3.2:1b` | 1.3 GB | 4 GB | Fastest, basic capability |
+| `llama3.2:3b` | 2.0 GB | 6 GB | Good balance |
+| `phi3:mini` | 2.3 GB | 6 GB | Efficient reasoning |
+| `llama3.2` (8B) | 4.7 GB | 8 GB | Best quality/speed balance |
+| `mistral` | 4.1 GB | 8 GB | Popular open-source |
+| `gemma2:9b` | 5.4 GB | 10 GB | Google's powerful model |
+| `llama3.1:70b` | 40 GB | 64 GB | Best quality (slow) |
+
+**Embedding Models** (required for all local modes):
+
+| Model | Size | Dimensions | Speed |
+|-------|------|------------|-------|
+| `all-minilm` | 0.1 GB | 384 | Very fast |
+| `nomic-embed-text` | 0.3 GB | 768 | Fast |
+| `mxbai-embed-large` | 0.7 GB | 1024 | Best quality |
+
+#### Hybrid Mode (Recommended for Mid-Range Hardware)
+
+For users with moderate hardware, the hybrid approach offers the best of both worlds:
+
+- **Embeddings**: Run locally via Ollama (fast, private, no API costs)
+- **Chat**: Use OpenRouter for complex queries (fast response, high quality)
+
+This ensures:
+- Complete privacy for document indexing (embeddings never leave your device)
+- Fast, high-quality responses for queries
+- Low per-query costs via OpenRouter's pay-per-use model
+
+```
+User's Document → [Local Embedding] → Vector Store (Local)
+                        ↓
+Query → [Local Embedding] → Similar Docs → [Cloud Chat] → Response
+```
 
 ### 8.3 Chat Modes
 

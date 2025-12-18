@@ -5,6 +5,7 @@ A powerful local RAG (Retrieval-Augmented Generation) application that lets you 
 ![Knowledge AI](https://img.shields.io/badge/version-1.0.0-blue)
 ![Python](https://img.shields.io/badge/python-3.10+-green)
 ![React](https://img.shields.io/badge/react-18-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 ## ✨ Features
 
@@ -28,6 +29,8 @@ A powerful local RAG (Retrieval-Augmented Generation) application that lets you 
 
 ### 📁 File Management
 - Index entire folders recursively
+- **Drag-and-drop file upload**
+- **Multiple knowledge bases** - organize documents by project or topic
 - Support for multiple file types:
   - Documents: PDF, DOCX, TXT, MD, RTF
   - Code: Python, JavaScript, TypeScript, Java, Go, Rust, etc.
@@ -38,9 +41,10 @@ A powerful local RAG (Retrieval-Augmented Generation) application that lets you 
 - Real-time file watching (auto-reindex on changes)
 
 ### 🎯 Multiple AI Providers
-- **OpenAI**: GPT-4 for chat, text-embedding-3-small for embeddings
-- **Anthropic**: Claude for intelligent conversations
-- **Ollama**: Run locally with Llama, Mistral, or other models
+- **OpenRouter** (Recommended): Access 200+ models including Claude, GPT-4, Gemini, Llama with one API key
+- **OpenAI**: GPT-4 for chat, text-embedding-3-small for embeddings (direct)
+- **Anthropic**: Claude for intelligent conversations (direct)
+- **Ollama**: Run locally with Llama, Mistral, or other models (100% private)
 
 ## 🚀 Quick Start
 
@@ -49,16 +53,24 @@ A powerful local RAG (Retrieval-Augmented Generation) application that lets you 
 - Python 3.10 or higher
 - Node.js 18 or higher
 - One of:
+  - OpenRouter API key (recommended - access to 200+ models)
   - OpenAI API key
   - Anthropic API key
-  - Ollama installed locally
+  - Ollama installed locally (free, private)
 
 ### Installation
 
-1. **Clone and setup backend:**
+1. **Clone the repository:**
 
 ```bash
-cd knowledge-ai/backend
+git clone https://github.com/YOUR_USERNAME/knowledge-ai.git
+cd knowledge-ai
+```
+
+2. **Setup backend:**
+
+```bash
+cd backend
 
 # Create virtual environment (recommended)
 python -m venv venv
@@ -68,20 +80,32 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-2. **Setup frontend:**
+3. **Setup frontend:**
 
 ```bash
-cd knowledge-ai/frontend
+cd ../frontend
 
 # Install dependencies
 npm install
 ```
 
-3. **Start the application:**
+4. **Start the application:**
+
+**Option A - Use the start script (easiest):**
+```bash
+# Windows
+start.bat
+
+# macOS/Linux
+./start.sh
+```
+
+**Option B - Manual start:**
 
 **Terminal 1 - Backend:**
 ```bash
 cd backend
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -91,10 +115,10 @@ cd frontend
 npm run dev
 ```
 
-4. **Open your browser:**
+5. **Open your browser:**
    Navigate to `http://localhost:3000`
 
-5. **Configure API keys:**
+6. **Configure API keys:**
    Click the Settings button in the sidebar to add your API keys.
 
 ## 📖 Usage Guide
@@ -197,24 +221,69 @@ The filter also scans file contents for:
 
 ## ⚙️ Configuration
 
+Knowledge AI supports multiple AI providers for maximum flexibility and privacy.
+
+### Option 1: OpenRouter (Recommended) 🌟
+
+**Get access to 200+ models with a single API key!**
+
+1. Sign up at [OpenRouter](https://openrouter.ai)
+2. Get your API key
+3. Launch Knowledge AI and click Settings
+4. Enter your OpenRouter API key
+5. Select from any available model!
+
+**Popular Models Available:**
+- **Chat**: Claude Sonnet 4, GPT-4o, Gemini 2.0 Flash (Free!), Llama 3.3, and 200+ more
+- **Embeddings**: OpenAI text-embedding-3-small/large, and others
+
+**Why OpenRouter?**
+- ✅ One API key for all providers
+- ✅ Access latest models automatically
+- ✅ Competitive pricing
+- ✅ No vendor lock-in
+- ✅ Experiment with cutting-edge models
+
+### Option 2: Direct Provider Keys
+
+Configure individual providers directly:
+
+1. Launch the app and click Settings
+2. Expand "Direct Provider Keys (Optional)"
+3. Enter your API keys:
+   - **OpenAI**: For embeddings and GPT-4 chat ([Get API key](https://platform.openai.com/api-keys))
+   - **Anthropic**: For Claude chat ([Get API key](https://console.anthropic.com/))
+4. Select your preferred providers
+
+### Option 3: Local-First (Ollama)
+
+For 100% private, offline operation:
+
+```bash
+# Install Ollama
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Pull models
+ollama pull llama3.2           # Chat model
+ollama pull nomic-embed-text   # Embedding model
+```
+
+Then in Knowledge AI settings:
+- Set **Chat Provider** to "Ollama"
+- Set **Embedding Provider** to "Ollama"
+- Verify Ollama URL: `http://localhost:11434`
+
+**Note:** You can mix providers! For example: OpenRouter chat + Ollama embeddings for hybrid setup.
+
 ### Environment Variables (Optional)
 
-Create a `.env` file in the backend directory:
+You can also configure via `.env` file in the backend directory:
 
 ```env
+OPENROUTER_API_KEY=sk-or-v1-...
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 ```
-
-### Using Ollama (Free, Local)
-
-1. Install Ollama: https://ollama.ai
-2. Pull models:
-   ```bash
-   ollama pull llama3.2
-   ollama pull nomic-embed-text
-   ```
-3. In Knowledge AI settings, select "Ollama" for both providers
 
 ### Supported File Types
 
