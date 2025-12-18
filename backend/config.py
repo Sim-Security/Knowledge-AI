@@ -24,8 +24,8 @@ class Config:
         self.openai_api_key: Optional[str] = None
         self.anthropic_api_key: Optional[str] = None
         self.openrouter_api_key: Optional[str] = None
-        self.embedding_provider: str = "openrouter"  # openai, ollama, openrouter
-        self.chat_provider: str = "openrouter"  # openai, anthropic, ollama, openrouter
+        self.embedding_provider: str = "ollama"  # openai, ollama, openrouter
+        self.chat_provider: str = "ollama"  # openai, anthropic, ollama, openrouter
         self.ollama_base_url: str = "http://localhost:11434"
         self.ollama_model: str = "llama3.2"
         self.ollama_embedding_model: str = "nomic-embed-text"
@@ -80,8 +80,8 @@ class Config:
                 self.openrouter_api_key = self._decrypt(data["openrouter_api_key"])
 
             # Load other settings
-            self.embedding_provider = data.get("embedding_provider", "openrouter")
-            self.chat_provider = data.get("chat_provider", "openrouter")
+            self.embedding_provider = data.get("embedding_provider", "ollama")
+            self.chat_provider = data.get("chat_provider", "ollama")
             self.ollama_base_url = data.get("ollama_base_url", "http://localhost:11434")
             self.ollama_model = data.get("ollama_model", "llama3.2")
             self.ollama_embedding_model = data.get("ollama_embedding_model", "nomic-embed-text")

@@ -41,29 +41,26 @@ A powerful local RAG (Retrieval-Augmented Generation) application that lets you 
 - Real-time file watching (auto-reindex on changes)
 
 ### 🎯 Multiple AI Providers
-- **OpenRouter** (Recommended): Access 200+ models including Claude, GPT-4, Gemini, Llama with one API key
+- **Ollama** (Default): Run 100% locally with Llama, Mistral, or other models - completely private, no API keys needed
+- **OpenRouter**: Access 200+ cloud models including Claude, GPT-4, Gemini, Llama with one API key
 - **OpenAI**: GPT-4 for chat, text-embedding-3-small for embeddings (direct)
 - **Anthropic**: Claude for intelligent conversations (direct)
-- **Ollama**: Run locally with Llama, Mistral, or other models (100% private)
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.10 - 3.13 (Python 3.14+ not yet supported)
 - Node.js 18 or higher
-- One of:
-  - OpenRouter API key (recommended - access to 200+ models)
-  - OpenAI API key
-  - Anthropic API key
-  - Ollama installed locally (free, private)
+- **Ollama** (recommended for local operation) - [Download here](https://ollama.com/download)
+- Or a cloud API key (OpenRouter, OpenAI, or Anthropic)
 
 ### Installation
 
 1. **Clone the repository:**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/knowledge-ai.git
+git clone https://github.com/Sim-Security/knowledge-ai.git
 cd knowledge-ai
 ```
 
@@ -221,30 +218,66 @@ The filter also scans file contents for:
 
 ## ⚙️ Configuration
 
-Knowledge AI supports multiple AI providers for maximum flexibility and privacy.
+Knowledge AI defaults to **local-first operation** with Ollama. No API keys required!
 
-### Option 1: OpenRouter (Recommended) 🌟
+### Option 1: Local-First with Ollama (Default) 🏠
 
-**Get access to 200+ models with a single API key!**
+**100% private, offline operation - your data never leaves your computer!**
+
+The startup script will automatically:
+1. Check if Ollama is installed
+2. Start Ollama if it's not running
+3. Guide you to install models based on your hardware
+
+**Install Ollama:**
+```bash
+# macOS/Linux
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Windows - download from https://ollama.com/download
+```
+
+**Model Selection (based on your hardware):**
+
+The app detects your system's RAM and GPU to recommend the best models. In Settings, you'll see personalized recommendations like:
+
+| Your Hardware | Recommended Chat Model | Size |
+|---------------|----------------------|------|
+| 4GB RAM | llama3.2:1b | ~1.3GB |
+| 8GB RAM | llama3.2 | ~4.7GB |
+| 16GB+ RAM | gemma2:9b or mistral | ~5GB |
+| 64GB+ RAM | llama3.1:70b | ~40GB |
+
+**Embedding model (always required for search):**
+```bash
+ollama pull nomic-embed-text   # ~300MB, works on any hardware
+```
+
+**Why Local?**
+- 🔒 Maximum privacy - no data leaves your device
+- 💰 Free after download - no API costs
+- ⚡ No internet required
+- 🎛️ Full control over your AI
+
+---
+
+### Option 2: OpenRouter (Cloud Alternative) �
+
+**Access 200+ models with a single API key!**
 
 1. Sign up at [OpenRouter](https://openrouter.ai)
 2. Get your API key
 3. Launch Knowledge AI and click Settings
 4. Enter your OpenRouter API key
-5. Select from any available model!
+5. Change providers from Ollama to OpenRouter
 
 **Popular Models Available:**
 - **Chat**: Claude Sonnet 4, GPT-4o, Gemini 2.0 Flash (Free!), Llama 3.3, and 200+ more
-- **Embeddings**: OpenAI text-embedding-3-small/large, and others
+- **Embeddings**: OpenAI text-embedding-3-small/large
 
-**Why OpenRouter?**
-- ✅ One API key for all providers
-- ✅ Access latest models automatically
-- ✅ Competitive pricing
-- ✅ No vendor lock-in
-- ✅ Experiment with cutting-edge models
+---
 
-### Option 2: Direct Provider Keys
+### Option 3: Direct Provider Keys
 
 Configure individual providers directly:
 
@@ -255,25 +288,7 @@ Configure individual providers directly:
    - **Anthropic**: For Claude chat ([Get API key](https://console.anthropic.com/))
 4. Select your preferred providers
 
-### Option 3: Local-First (Ollama)
-
-For 100% private, offline operation:
-
-```bash
-# Install Ollama
-curl -fsSL https://ollama.com/install.sh | sh
-
-# Pull models
-ollama pull llama3.2           # Chat model
-ollama pull nomic-embed-text   # Embedding model
-```
-
-Then in Knowledge AI settings:
-- Set **Chat Provider** to "Ollama"
-- Set **Embedding Provider** to "Ollama"
-- Verify Ollama URL: `http://localhost:11434`
-
-**Note:** You can mix providers! For example: OpenRouter chat + Ollama embeddings for hybrid setup.
+**Note:** You can mix providers! For example: Cloud chat + local Ollama embeddings for a hybrid setup.
 
 ### Environment Variables (Optional)
 
