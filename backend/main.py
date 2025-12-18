@@ -192,6 +192,17 @@ def get_collection_for_kb(kb_id: str) -> chromadb.Collection:
     
     if collection_name in existing_collections:
         coll = chroma_client.get_collection(collection_name)
+        # Check for dimension mismatch
+        coll_metadata = coll.metadata or {}
+        stored_dimension = coll_metadata.get("embedding_dimension")
+        if stored_dimension and stored_dimension != current_dimension:
+            stored_model = coll_metadata.get("embedding_model", "unknown")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Embedding dimension mismatch! Collection was created with {stored_model} ({stored_dimension}D) "
+                       f"but current model is {current_model} ({current_dimension}D). "
+                       f"Either clear this knowledge base and re-index, or switch to a compatible embedding model."
+            )
     else:
         # Create new collection with dimension metadata
         coll = chroma_client.create_collection(
